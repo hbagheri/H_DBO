@@ -1,0 +1,34 @@
+name: tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        perl: ['5.20', '5.30', '5.38']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Perl ${{ matrix.perl }}
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+          install-modules-with: cpanm
+          install-modules: |
+            DBI
+            DBD::SQLite
+            Test::More
+
+      - name: perl -c
+        run: perl -Ilib -c lib/H_DBO.pm
+
+      - name: prove
+        run: prove -lv t/*.t

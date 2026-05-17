@@ -1,5 +1,7 @@
 # H_DBO
 
+[![tests](https://github.com/hbagheri/H_DBO/actions/workflows/test.yml/badge.svg)](https://github.com/hbagheri/H_DBO/actions/workflows/test.yml)
+
 A tiny chainable SQL query builder on top of [DBI](https://metacpan.org/pod/DBI),
 designed for **PostgreSQL** but happy on any DBI driver. Single-file module,
 no Moose, no heavy deps.
