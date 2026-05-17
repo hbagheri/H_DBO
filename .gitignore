@@ -1,0 +1,23 @@
+# Build artefacts
+/blib/
+/Makefile
+/Makefile.old
+/MYMETA.*
+/pm_to_blib
+/_build/
+
+# Test/cover
+/cover_db/
+nytprof.out
+*.bs
+*.o
+*.so
+
+# Editor / tool cruft
+*.swp
+*.swo
+*~
+.DS_Store
+/.idea/
+/.vscode/
+/.trunk/

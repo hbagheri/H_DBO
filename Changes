@@ -1,0 +1,79 @@
+Revision history for H_DBO
+
+2.0.0  2026-05-17
+
+  Complete rewrite. NOT backwards compatible with 1.x.
+
+  Breaking changes:
+
+    * Constructor now takes a hashref / named args instead of 18 positional
+      arguments:
+          H_DBO->new({ db_name => '...', db_user => '...', db_pass => '...' });
+      The legacy positional form is gone.
+
+    * Module now lives in lib/H_DBO.pm rather than at the top level.
+
+    * `getKey()`, `set4update()`, `makeInsert()`, `makeInsertVals()` were
+      removed (the first was broken, the others are now internal).
+
+    * `db_disconnect()` renamed to `disconnect()`.
+
+    * `values()` is gone; pass values via `set()`.
+
+  Bug fixes:
+
+    * `use Switch;` removed -- module now runs on Perl 5.10 and later
+      (the old version refused to load on any recent Perl).
+
+    * SQL injection vectors in `where()`, `orderBy()`, `set4update()` and
+      INSERT/UPDATE value handling closed. All user-supplied values now go
+      through DBI placeholders + bind values. Identifiers (table, column,
+      ORDER BY / GROUP BY targets) are validated.
+
+    * `where()` IN-clause no longer emits invalid SQL (`IN ('a','b')'`).
+
+    * `orderBy($col, $dir)` now correctly distinguishes ASC/DESC (the old
+      version used numeric `!=` to compare strings and always silently fell
+      through).
+
+    * `query()` SELECT now correctly reads `_group_by` (was looking for
+      `_groupby`, which never existed -- GROUP BY was silently a no-op).
+
+    * `getKey()` removed -- it stringified a hashref into a hash key and
+      returned nonsense.
+
+    * Debug `print Dumper` in `makeInsertVals()` removed.
+
+    * `execQuery()` errors are now propagated via `croak` instead of being
+      swallowed (kept as alias for the renamed `execute()`).
+
+    * REPLACE INTO (MySQL-only) replaced by a portable `upsert()` method
+      that emits `INSERT ... ON CONFLICT ... DO UPDATE` (PostgreSQL 9.5+,
+      SQLite 3.24+).
+
+  New features:
+
+    * `use strict; use warnings;` and `use 5.014;`.
+
+    * `host`, `port`, `dsn_extra`, `dbi_attrs`, and `dbh` constructor params.
+
+    * `upsert($table, conflict_target => ['col', ...])`.
+
+    * `groupBy(@cols)`.
+
+    * `txn(\&code)` transactional wrapper with automatic rollback on die.
+
+    * `all()` / `one()` / `rows()` convenience accessors.
+
+    * `H_DBO->raw($sql, @binds)` for explicit raw SQL fragments anywhere a
+      value is accepted (replaces the fragile regex sniffing for things
+      like `NOW()` in the old `set4update()`).
+
+    * `where()` understands hashref values: scalar => equality (placeholder),
+      arrayref => IN with placeholders, undef => IS NULL, raw => raw.
+
+    * Test suite (`t/*.t`) using DBD::SQLite in-memory.
+
+    * `Makefile.PL`, `cpanfile`, `README.md`, `Changes`, `.gitignore`.
+
+1.0.4  legacy  Initial GitLab release.
